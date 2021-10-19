@@ -1,0 +1,240 @@
+# Copyright (c) 2019-2021 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+
+title: "OCI RM VCN Template"
+description: "Basic VCN creation"
+schemaVersion: 1.1.0
+version: "20211011"
+
+source:
+  type: testexample
+
+locale: "en"
+variableGroups:
+  - title: "Basic Hidden"
+    visible: false
+    variables:
+      - tenancy_ocid
+      - region
+# Other hidden    
+      - route_table_route_rules_destination_type
+      - demo_db_system_subnet_prohibit_public_ip_on_vnic
+
+# General Network 
+  - title: "General Network Details"
+    variables:
+      - target_compartment
+      - vcn_display_name
+      - vcn_cidr_block
+      - vcn_dns_label
+      - internet_gateway_enabled
+      - internet_gateway_display_name
+      - route_table_display_name
+      - route_table_route_rules_description
+      - route_table_route_rules_destination
+# Compute Network
+  - title: "Middle Tier Network Details"
+    variables:
+      - demo_compute_subnet_display_name
+      - demo_compute_subnet_cidr_block
+      - demo_compute_subnet_dns_label
+      - demo_compute_instance_security_list_display_name
+      - demo_compute_instance_ingress_security_inbound_source_CIDR
+# Database Network
+  - title: "Database Tier Network Details"
+    variables:
+      - demo_db_system_subnet_display_name
+      - demo_db_system_subnet_cidr_block
+      - demo_db_system_subnet_dns_label
+      - demo_db_system_security_list_display_name
+      - demo_db_system_ingress_security_inbound_source_CIDR
+
+# Miscelleanous
+  - title: "Miscellaneous"
+    variables:      
+      - resource_tags
+    visible: true
+
+variables:
+
+  tenancy_ocid:
+    type: string
+    title: Tenancy ID
+    description: "The Oracle Cloud Identifier (OCID) for your tenancy"
+    required: true
+
+  region:
+    type: oci:identity:region:name
+    title: Region
+    description: "The region in which to create all resources"
+    required: true
+
+  target_compartment:
+    type: oci:identity:compartment:id
+    required: true
+    title: "Compartment"
+    description: "The compartment in which to create the VCN."
+
+# General Network
+
+  vcn_display_name:
+    type: string
+    title: "Network Name"
+    description: "Provide a descriptive name"
+    required: true
+
+  vcn_cidr_block:
+    type: string
+    title: "CIDR Block"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$"
+    required: true
+    default: "10.55.66.128/25"
+
+  vcn_dns_label:
+    type: string
+    title: "DNS Label"
+    description: "Provide a conforming DNS label"
+    required: true
+
+  internet_gateway_enabled:
+    type: boolean
+    title: "Enable Internet Gateway?"
+    default: true
+
+  internet_gateway_display_name:
+    type: string
+    title: "Internet Gateway Name"
+    description: "Provide a descriptive name"
+    required: true
+    visible:
+      and:
+        - and:
+          - internet_gateway_enabled    
+
+  route_table_display_name:
+    type: string
+    title: "Route table name"
+    description: "Provide a descriptive name"
+    required: true
+
+
+  route_table_route_rules_description:
+    type: string
+    title: "Route table rules description"
+    description: "Provide a descriptive name"
+    required: true
+
+  route_table_route_rules_destination:
+    type: string
+    title: "Route table rule destination"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0))$"
+    required: true
+    default: "0.0.0.0/0"
+
+  route_table_route_rules_destination_type:
+    type: string
+    title: "Route table destination type"
+    required: true
+
+# Compute Network
+
+  demo_compute_subnet_display_name:
+    type: string
+    title: "DEMO UI Subnet Name"
+    description: "Provide a descriptive name"
+    required: true
+
+  demo_compute_subnet_cidr_block:
+    type: string
+    title: "DEMO UI Subnet CIDR Block"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$"
+    required: true
+    default: "10.55.66.128/28"
+
+  demo_compute_subnet_dns_label:
+    type: string
+    title: "DEMO UI Subnet DNS Label"
+    description: "Provide a conforming DNS label"
+    required: true
+
+  demo_compute_instance_security_list_display_name:
+    type: string
+    title: "DEMO UI Security List Name"
+    description: "Provide a descriptive name"
+    required: true
+
+  demo_compute_instance_ingress_security_inbound_source_CIDR:
+    type: string
+    title: "DEMO UI Ingress Source CIDR range"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$"
+    required: true
+    default: "0.0.0.0/0"
+
+# Database Network
+
+  demo_db_system_subnet_display_name:
+    type: string
+    title: "DEMO DB Subnet Name"
+    description: "Provide a descriptive name"
+    required: true
+
+  demo_db_system_subnet_cidr_block:
+    type: string
+    title: "DEMO DB Subnet CIDR Block"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$"
+    required: true
+    default: "10.55.66.144/28"
+
+
+  demo_db_system_subnet_prohibit_public_ip_on_vnic:
+    type: boolean
+    title: "Prohibit public IP on DB VNIC"
+    default: true
+
+  demo_db_system_subnet_dns_label:
+    type: string
+    title: "DEMO DB Subnet DNS Label"
+    description: "Provide a conforming DNS label"
+    required: true
+
+  demo_db_system_security_list_display_name:
+    type: string
+    title: "DEMO DB Security List Name"
+    description: "Provide a descriptive name"
+    required: true
+
+
+###
+# Allow ingress only from DEMO Compute instance
+###
+
+  demo_db_system_ingress_security_inbound_source_CIDR:
+    type: string
+    title: "DEMO DB Ingress Source CIDR range, e.g., for the DEMO UI compute"
+    pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$"
+    required: true
+    default: "10.55.66.128/28"
+
+
+# Miscellaneous
+
+  resource_tags:
+    type: oci:identity:tag:value
+    title: Resource Tags
+    description: Tag value for resource created
+    required: true
+    dependsOn:
+      compartmentId: ${target_compartment}
+
+outputGroups:
+  - title: "Stack Output Summary"
+    outputs:
+      - resource_tags
+
+outputs:
+  resource_tags:
+    type: string
+    title: "Resource Tags Assigned"
+    displayText: "Freeform and\\or defined"
+    visible: true
